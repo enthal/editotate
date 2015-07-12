@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id='editable' contentEditable="true">
+      Loading...
+    </div>
+
+    <script>
+      var editable = document.getElementById('editable');
+
+      editable.addEventListener('input', function () {  // only on WebKit (TODO)
+        var sel = window.getSelection();
+
+        var r = /\b(\w+)(\W)$/.exec( sel.focusNode.nodeValue.substring(0, sel.focusOffset) );
+        if (r) {
+          var word = r[1], terminal = r[2];
+
+          console.log(word, '['+terminal+']');
+
+          if (word === "blue") {
+            // replace "blue" with "red"
+            console.log(sel);
+            var nv = sel.focusNode.nodeValue
+            sel.focusNode.nodeValue =
+              nv.substring(0, sel.focusOffset - 1 - word.length)
+              + "red" + terminal +
+              nv.substring(sel.focusOffset) ;
+              
+            // TODO: move caret back to expected location
+            // TODO: replace w/ HTML
+          }
+        }
+
+        localStorage.setItem('contenteditable', this.innerHTML);
+        localStorage.setItem('count', +(localStorage.getItem('count')||0) + 1);
+      });
+
+      editable.innerHTML = localStorage.getItem('contenteditable') || "You can edit this text!";
+
+    </script>
+  </body>
+</html>
