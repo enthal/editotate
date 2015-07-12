@@ -16,12 +16,18 @@
         if (r) {
           var word = r[1], terminal = r[2];
 
-          console.log(word, '['+terminal+']');
 
-          if (word === "blue") {
-            // replace "blue" with "vermillion"
+          var replacement = {
+            red: 'vermillion',
+            green: 'chartreuse',
+            blue: 'azure',
+          }[word]
 
-            var replacement = "vermillion"
+          console.log(word, '['+terminal+']', replacement);
+
+          if (replacement) {
+            // replace "red" with "vermillion", etc
+
             console.log(sel);
             var origOffset = sel.focusOffset
             var nv = node.nodeValue
