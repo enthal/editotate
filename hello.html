@@ -11,22 +11,33 @@
       editable.addEventListener('input', function () {  // only on WebKit (TODO)
         var sel = window.getSelection();
 
-        var r = /\b(\w+)(\W)$/.exec( sel.focusNode.nodeValue.substring(0, sel.focusOffset) );
+        var node = sel.focusNode;
+        var r = /\b(\w+)(\W)$/.exec( node.nodeValue.substring(0, sel.focusOffset) );
         if (r) {
           var word = r[1], terminal = r[2];
 
           console.log(word, '['+terminal+']');
 
           if (word === "blue") {
-            // replace "blue" with "red"
+            // replace "blue" with "vermillion"
+
+            var replacement = "vermillion"
             console.log(sel);
-            var nv = sel.focusNode.nodeValue
-            sel.focusNode.nodeValue =
+            var origOffset = sel.focusOffset
+            var nv = node.nodeValue
+            node.nodeValue =   // sets sel.focusOffset=0
               nv.substring(0, sel.focusOffset - 1 - word.length)
-              + "red" + terminal +
+              + replacement + terminal +
               nv.substring(sel.focusOffset) ;
-              
-            // TODO: move caret back to expected location
+
+            // move caret back to expected location
+            var range = document.createRange();
+            range.setStart(node, origOffset - word.length + replacement.length);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+            console.log(sel.focusOffset, 'ofs');
+
             // TODO: replace w/ HTML
           }
         }
