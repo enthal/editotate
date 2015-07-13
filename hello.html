@@ -16,16 +16,14 @@
         var sel = window.getSelection();
 
         var node = sel.focusNode;
-        var r = /\b(\w+)(\W)$/.exec( node.nodeValue.substring(0, sel.focusOffset) );
+        var r = /\b(\w+)(\W)$/ .exec( node.nodeValue.substring(0, sel.focusOffset) );
         if (r) {
           var word = r[1], terminal = r[2];
-
-
           var replacement = {
             red: 'vermillion',
             green: 'chartreuse',
             blue: 'azure',
-          }[word]
+          }[word];
 
           console.log(word, '['+terminal+']', replacement);
 
@@ -33,8 +31,8 @@
             // replace "red" with "vermillion", etc
 
             console.log(sel);
-            var origOffset = sel.focusOffset
-            var nv = node.nodeValue
+            var origOffset = sel.focusOffset;
+            var nv = node.nodeValue;
             node.nodeValue =   // sets sel.focusOffset=0
               nv.substring(0, sel.focusOffset - 1 - word.length)
               + replacement + terminal +
