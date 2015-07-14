@@ -34,20 +34,27 @@
             console.log(sel);
             var origOffset = sel.focusOffset;
             var nv = node.nodeValue;
-            node.nodeValue =   // sets sel.focusOffset=0
-              nv.substring(0, sel.focusOffset - 1 - word.length)
-              + replacement +
-              nv.substring(sel.focusOffset - 1) ;
+
+            var insertBefore = function(newNode) {
+              node.parentElement.insertBefore(newNode, node);
+            }
+            var prefixNode = document.createTextNode(nv.substring(0, sel.focusOffset - 1 - word.length));
+            insertBefore(prefixNode);
+            var tempNode = document.createElement("span");
+            insertBefore(tempNode);
+            tempNode.insertAdjacentHTML( 'beforebegin',
+              "<span style='color:"+word+"' contenteditable='false'>"+replacement+"</span>" );
+            node.parentElement.removeChild(tempNode);
+            var suffixNode = document.createTextNode(nv.substring(sel.focusOffset - 1));
+            insertBefore(suffixNode);
+            node.parentElement.removeChild(node);
 
             // move caret back to expected location
             var range = document.createRange();
-            range.setStart(node, origOffset - word.length + replacement.length);
+            range.setStart(suffixNode, 1);  // just after terminal character: where we started, from user perspective
             range.collapse(true);
             sel.removeAllRanges();
             sel.addRange(range);
-            console.log(sel.focusOffset, 'ofs');
-
-            // TODO: replace w/ HTML
           }
         }
 
