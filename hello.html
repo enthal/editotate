@@ -36,8 +36,8 @@
             var nv = node.nodeValue;
             node.nodeValue =   // sets sel.focusOffset=0
               nv.substring(0, sel.focusOffset - 1 - word.length)
-              + replacement + terminal +
-              nv.substring(sel.focusOffset) ;
+              + replacement +
+              nv.substring(sel.focusOffset - 1) ;
 
             // move caret back to expected location
             var range = document.createRange();
