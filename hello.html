@@ -35,18 +35,21 @@
             var origOffset = sel.focusOffset;
             var nv = node.nodeValue;
 
-            var insertBefore = function(newNode) {
+            var insertBeforeFocusNode = function(newNode) {
               node.parentElement.insertBefore(newNode, node);
             }
             var prefixNode = document.createTextNode(nv.substring(0, sel.focusOffset - 1 - word.length));
-            insertBefore(prefixNode);
-            var tempNode = document.createElement("span");
-            insertBefore(tempNode);
-            tempNode.insertAdjacentHTML( 'beforebegin',
+            insertBeforeFocusNode(prefixNode);
+
+            var tempElem = document.createElement("span");
+            insertBeforeFocusNode(tempElem);
+            tempElem.insertAdjacentHTML( 'beforebegin',
               "<span style='color:"+word+"' contenteditable='false'>"+replacement+"</span>" );
-            node.parentElement.removeChild(tempNode);
+            node.parentElement.removeChild(tempElem);
+
             var suffixNode = document.createTextNode(nv.substring(sel.focusOffset - 1));
-            insertBefore(suffixNode);
+            insertBeforeFocusNode(suffixNode);
+
             node.parentElement.removeChild(node);
 
             // move caret back to expected location
