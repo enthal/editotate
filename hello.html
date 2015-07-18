@@ -3,11 +3,18 @@
   <head>
     <title>Editotate!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js" charset="utf-8"></script>
+
   </head>
 
   <body>
     <div id='editable' contentEditable="true">
       Loading...
+    </div>
+    <div id='findme'>
+      Fetching....
     </div>
 
     <script>
@@ -66,6 +73,12 @@
       });
 
       editable.innerHTML = localStorage.getItem('contenteditable') || "You can edit this text!";
+
+      var gimme = d3.select('#findme');
+      // var gimme = document.getElementById('findme');
+      console.log(gimme[0][0]);
+      // gimme.innerHTML =
+
 
     </script>
   </body>
