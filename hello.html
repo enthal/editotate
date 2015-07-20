@@ -80,6 +80,13 @@
           console.log(rows);
         });
 
+      d3.csv("http://www.tjames.com/quandl/WIKI_tickers.csv")
+        .get(function(error, rows) {
+          if (error) { throw error; }
+          d3.select('#data2').text(rows[0].name);
+          console.log(rows);
+        });
+
     </script>
   </body>
 </html>
