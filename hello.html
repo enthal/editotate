@@ -13,9 +13,8 @@
     <div id='editable' contentEditable="true">
       Loading...
     </div>
-    <div id='findme'>
-      Fetching....
-    </div>
+    <div id='data1'> Fetching.... </div>
+    <div id='data2'> Fetching.... </div>
 
     <script>
       var editable = document.getElementById('editable');
@@ -74,11 +73,12 @@
 
       editable.innerHTML = localStorage.getItem('contenteditable') || "You can edit this text!";
 
-      var gimme = d3.select('#findme');
-      // var gimme = document.getElementById('findme');
-      console.log(gimme[0][0]);
-      // gimme.innerHTML =
-
+      d3.csv("https://www.quandl.com/api/v1/datasets/WIKI/AAPL.csv?trim_start=2015-07-01&rows=1")
+        .get(function(error, rows) {
+          if (error) { throw error; }
+          d3.select('#data1').text(rows[0]['Adj. Close']);
+          console.log(rows);
+        });
 
     </script>
   </body>
