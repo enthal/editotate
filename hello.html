@@ -27,8 +27,6 @@
     <div id='editable' contentEditable="true">
       Loading...
     </div>
-    <div id='data1'> Fetching.... </div>
-    <div id='data2'> Fetching.... </div>
 
     <script>
       var substitutors = [
@@ -56,7 +54,6 @@
           d3.csv("http://www.tjames.com/quandl/WIKI_tickers.csv")
             .get(function(error, rows) {
               if (error) { throw error; }
-              d3.select('#data2').text(rows[0].name+' '+rows.length);
               var regex = /WIKI\/([A-Z]+)/;
               for (var i in rows) {
                 stocksByTicker[regex.exec(rows[i]['quandl code'])[1]] = rows[i];
@@ -141,14 +138,6 @@
       });
 
       editable.innerHTML = localStorage.getItem('contenteditable') || "You can edit this text!";
-
-      d3.csv("https://www.quandl.com/api/v1/datasets/WIKI/AAPL.csv?trim_start=2015-07-20&rows=1")
-        .get(function(error, rows) {
-          if (error) { throw error; }
-          d3.select('#data1').text(rows[0]['Adj. Close']);
-          console.log(rows);
-        });
-
 
 
     </script>
