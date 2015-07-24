@@ -42,8 +42,8 @@
             isMatchWord: function(word) {
               return !!colorsByColor[word];
             },
-            substitute: function(word, fn) {
-              fn("<span contenteditable='false' style='color:"+word+"'>"+colorsByColor[word]+"</span>");
+            substitute: function(word) {
+              return "<span contenteditable='false' style='color:"+word+"'>"+colorsByColor[word]+"</span>";
             }
           };
         })(),
@@ -71,12 +71,8 @@
             isMatchWord: function(word) {
               return !!stocksByTicker[word];
             },
-            substitute: function(word, fn, save) {
+            substitute: function(word, save) {
               var stock = stocksByTicker[word];
-              fn(
-                "<span contenteditable='false' class='stock'>"
-                +stock.name
-                +" <span class='ticker-"+word+"'></span></span>" );
               d3.csv("https://www.quandl.com/api/v1/datasets/WIKI/"+word+".csv?trim_start=2015-07-20&rows=1")
                 .get(function(error, rows) {
                   if (error) { throw error; }
@@ -84,6 +80,10 @@
                   d3.selectAll(".ticker-"+word).text(rows[0]['Adj. Close']);
                   save();
                 });
+              return (
+                "<span contenteditable='false' class='stock'>"
+                +stock.name
+                +" <span class='ticker-"+word+"'></span></span>" );
             }
           };
         })()
@@ -128,14 +128,10 @@
 
             parentElement.removeChild(node);
 
-            substitutor.substitute(
-              word,
-              function(newHTML) {
-                tempElem.insertAdjacentHTML('beforebegin', newHTML);
-                parentElement.removeChild(tempElem);
-                save();
-              },
-              save );
+            var newHTML = substitutor.substitute(word, save);
+            tempElem.insertAdjacentHTML('beforebegin', newHTML);
+            parentElement.removeChild(tempElem);
+            save();
 
             // move caret back to expected location
             var range = document.createRange();
