@@ -16,6 +16,9 @@
       h1 {
         font-family: 'Oxygen', serif;
       }
+      .stock {
+        font-family: 'Oxygen', serif;
+      }
     </style>
   </head>
 
@@ -29,18 +32,47 @@
 
     <script>
       var substitutors = [
+        // colors
         (function () {
           var colorsByColor = {
             red: 'vermillion',
             green: 'chartreuse',
             blue: 'azure'
           };
+
           return {
             isMatchWord: function(word) {
               return !!colorsByColor[word];
             },
             substitute: function(word, fn) {
-              fn("<span style='color:"+word+"' contenteditable='false'>"+colorsByColor[word]+"</span>");
+              fn("<span contenteditable='false' style='color:"+word+"'>"+colorsByColor[word]+"</span>");
+            }
+          };
+        })(),
+
+        // stocks
+        (function () {
+          var stocksByTicker = {};
+          d3.csv("http://www.tjames.com/quandl/WIKI_tickers.csv")
+            .get(function(error, rows) {
+              if (error) { throw error; }
+              d3.select('#data2').text(rows[0].name+' '+rows.length);
+              var regex = /WIKI\/([A-Z]+)/;
+              for (var i in rows) {
+                stocksByTicker[regex.exec(rows[i]['quandl code'])[1]] = rows[i];
+              }
+              delete stocksByTicker.A;  // sorry Agilent Technologies, Inc.
+              delete stocksByTicker.I;  // sorry Intelsat S.A.
+              // console.log(stocksByTicker);
+            });
+
+          return {
+            isMatchWord: function(word) {
+              return !!stocksByTicker[word];
+            },
+            substitute: function(word, fn) {
+              var stock = stocksByTicker[word];
+              fn("<span contenteditable='false' class='stock'>"+stock.name+"</span>");
             }
           };
         })()
@@ -103,24 +135,14 @@
 
       editable.innerHTML = localStorage.getItem('contenteditable') || "You can edit this text!";
 
-      d3.csv("https://www.quandl.com/api/v1/datasets/WIKI/AAPL.csv?trim_start=2015-07-01&rows=1")
+      d3.csv("https://www.quandl.com/api/v1/datasets/WIKI/AAPL.csv?trim_start=2015-07-20&rows=1")
         .get(function(error, rows) {
           if (error) { throw error; }
           d3.select('#data1').text(rows[0]['Adj. Close']);
           console.log(rows);
         });
 
-      var stocksByTicker = {};
-      d3.csv("http://www.tjames.com/quandl/WIKI_tickers.csv")
-        .get(function(error, rows) {
-          if (error) { throw error; }
-          d3.select('#data2').text(rows[0].name+' '+rows.length);
-          var regex = /WIKI\/([A-Z]+)/;
-          for (var i in rows) {
-            stocksByTicker[regex.exec(rows[i]['quandl code'])[1]] = rows[i];
-          }
-          console.log(stocksByTicker);
-        });
+
 
     </script>
   </body>
