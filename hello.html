@@ -54,13 +54,17 @@
           d3.csv("http://www.tjames.com/quandl/WIKI_tickers.csv")
             .get(function(error, rows) {
               if (error) { throw error; }
-              var regex = /WIKI\/([A-Z]+)/;
+              var quandlCodeRegex = /WIKI\/([A-Z]+)/;
+              var suffixRegex = /(,? *(inc\.?( ?\(\w+\))?| incorporated| corp(oration|\.)?))$/gi;
               for (var i in rows) {
-                stocksByTicker[regex.exec(rows[i]['quandl code'])[1]] = rows[i];
+                var stock = rows[i];
+                var ticker = quandlCodeRegex.exec(stock['quandl code'])[1];
+                stocksByTicker[ticker] = stock;
+                stock.name = stock.name.replace(suffixRegex, "");
+                // console.log(ticker, stock.name);
               }
               delete stocksByTicker.A;  // sorry Agilent Technologies, Inc.
               delete stocksByTicker.I;  // sorry Intelsat S.A.
-              // console.log(stocksByTicker);
             });
 
           return {
