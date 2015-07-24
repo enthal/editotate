@@ -28,46 +28,68 @@
     <div id='data2'> Fetching.... </div>
 
     <script>
+      var substitutors = [
+        (function () {
+          var colorsByColor = {
+            red: 'vermillion',
+            green: 'chartreuse',
+            blue: 'azure'
+          };
+          return {
+            isMatchWord: function(word) {
+              return !!colorsByColor[word];
+            },
+            substitute: function(word, fn) {
+              fn("<span style='color:"+word+"' contenteditable='false'>"+colorsByColor[word]+"</span>");
+            }
+          };
+        })()
+      ];
+
       var editable = document.getElementById('editable');
 
       editable.addEventListener('input', function () {  // only on WebKit (TODO)
+        var that = this;
+        function save() {
+          localStorage.setItem('contenteditable', that.innerHTML);
+          localStorage.setItem('count', +(localStorage.getItem('count')||0) + 1);
+        }
+        save();
         var sel = window.getSelection();
 
         var node = sel.focusNode;
         var r = /\b(\w+)(\W)$/ .exec( node.nodeValue.substring(0, sel.focusOffset) );
-        if (r) {
-          var word = r[1], terminal = r[2];
-          var replacement = {
-            red: 'vermillion',
-            green: 'chartreuse',
-            blue: 'azure',
-          }[word];
+        if (!r) { return; }
 
-          console.log(word, '['+terminal+']', replacement);
-
-          if (replacement) {
-            // replace "red" with "vermillion", etc
-
+        var word = r[1], terminal = r[2];
+        console.log(word, '['+terminal+']');
+        for (var i in substitutors) {
+          var substitutor = substitutors[i];
+          if (substitutor.isMatchWord(word)) {
             console.log(sel);
             var origOffset = sel.focusOffset;
             var nv = node.nodeValue;
+            var parentElement = node.parentElement;
 
             var insertBeforeFocusNode = function(newNode) {
-              node.parentElement.insertBefore(newNode, node);
+              parentElement.insertBefore(newNode, node);
             }
             var prefixNode = document.createTextNode(nv.substring(0, sel.focusOffset - 1 - word.length));
             insertBeforeFocusNode(prefixNode);
 
             var tempElem = document.createElement("span");
             insertBeforeFocusNode(tempElem);
-            tempElem.insertAdjacentHTML( 'beforebegin',
-              "<span style='color:"+word+"' contenteditable='false'>"+replacement+"</span>" );
-            node.parentElement.removeChild(tempElem);
 
             var suffixNode = document.createTextNode(nv.substring(sel.focusOffset - 1));
             insertBeforeFocusNode(suffixNode);
 
-            node.parentElement.removeChild(node);
+            parentElement.removeChild(node);
+
+            substitutor.substitute(word, function(newHTML) {
+              tempElem.insertAdjacentHTML('beforebegin', newHTML);
+              parentElement.removeChild(tempElem);
+              save();
+            });
 
             // move caret back to expected location
             var range = document.createRange();
@@ -77,9 +99,6 @@
             sel.addRange(range);
           }
         }
-
-        localStorage.setItem('contenteditable', this.innerHTML);
-        localStorage.setItem('count', +(localStorage.getItem('count')||0) + 1);
       });
 
       editable.innerHTML = localStorage.getItem('contenteditable') || "You can edit this text!";
