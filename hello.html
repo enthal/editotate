@@ -72,7 +72,14 @@
             },
             substitute: function(word, fn) {
               var stock = stocksByTicker[word];
-              fn("<span contenteditable='false' class='stock'>"+stock.name+"</span>");
+              fn("<span contenteditable='false' class='stock ticker-"+word+"'>"+stock.name+"</span>");
+              d3.csv("https://www.quandl.com/api/v1/datasets/WIKI/"+word+".csv?trim_start=2015-07-20&rows=1")
+                .get(function(error, rows) {
+                  if (error) { throw error; }
+                  console.log(rows);
+                  d3.selectAll(".ticker-"+word).append('span').text(rows[0]['Adj. Close']);
+                  save();
+                });
             }
           };
         })()
