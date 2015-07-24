@@ -67,14 +67,17 @@
             isMatchWord: function(word) {
               return !!stocksByTicker[word];
             },
-            substitute: function(word, fn) {
+            substitute: function(word, fn, save) {
               var stock = stocksByTicker[word];
-              fn("<span contenteditable='false' class='stock ticker-"+word+"'>"+stock.name+"</span>");
+              fn(
+                "<span contenteditable='false' class='stock'>"
+                +stock.name
+                +" <span class='ticker-"+word+"'></span></span>" );
               d3.csv("https://www.quandl.com/api/v1/datasets/WIKI/"+word+".csv?trim_start=2015-07-20&rows=1")
                 .get(function(error, rows) {
                   if (error) { throw error; }
                   console.log(rows);
-                  d3.selectAll(".ticker-"+word).append('span').text(rows[0]['Adj. Close']);
+                  d3.selectAll(".ticker-"+word).text(rows[0]['Adj. Close']);
                   save();
                 });
             }
@@ -121,11 +124,14 @@
 
             parentElement.removeChild(node);
 
-            substitutor.substitute(word, function(newHTML) {
-              tempElem.insertAdjacentHTML('beforebegin', newHTML);
-              parentElement.removeChild(tempElem);
-              save();
-            });
+            substitutor.substitute(
+              word,
+              function(newHTML) {
+                tempElem.insertAdjacentHTML('beforebegin', newHTML);
+                parentElement.removeChild(tempElem);
+                save();
+              },
+              save );
 
             // move caret back to expected location
             var range = document.createRange();
