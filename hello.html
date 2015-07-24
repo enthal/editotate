@@ -3,13 +3,24 @@
   <head>
     <title>Editotate!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700|Oxygen:400,700' rel='stylesheet' type='text/css'>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js" charset="utf-8"></script>
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js" charset="utf-8"></script-->
 
+    <style type="text/css">
+      body {
+        font-family: 'Lora', serif;
+        font-size: 15pt;
+      }
+      h1 {
+        font-family: 'Oxygen', serif;
+      }
+    </style>
   </head>
 
   <body>
+    <h1>Editotate.</h1>
     <div id='editable' contentEditable="true">
       Loading...
     </div>
@@ -80,11 +91,16 @@
           console.log(rows);
         });
 
+      var stocksByTicker = {};
       d3.csv("http://www.tjames.com/quandl/WIKI_tickers.csv")
         .get(function(error, rows) {
           if (error) { throw error; }
-          d3.select('#data2').text(rows[0].name);
-          console.log(rows);
+          d3.select('#data2').text(rows[0].name+' '+rows.length);
+          var regex = /WIKI\/([A-Z]+)/;
+          for (var i in rows) {
+            stocksByTicker[regex.exec(rows[i]['quandl code'])[1]] = rows[i];
+          }
+          console.log(stocksByTicker);
         });
 
     </script>
