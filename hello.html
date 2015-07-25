@@ -77,7 +77,7 @@
                 .get(function(error, rows) {
                   if (error) { throw error; }
                   console.log(rows);
-                  d3.selectAll(".ticker-"+word).text(rows[0]['Adj. Close']);
+                  d3.selectAll(".ticker-"+word).text('$'+rows[0]['Adj. Close']);
                   save();
                 });
               return (
