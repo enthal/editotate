@@ -73,11 +73,14 @@
             },
             substitute: function(word, save) {
               var stock = stocksByTicker[word];
-              d3.csv("https://www.quandl.com/api/v1/datasets/WIKI/"+word+".csv?trim_start=2015-07-20&rows=1")
+              var startDate = new Date;
+              startDate.setFullYear(startDate.getFullYear() - 1);
+              startDate = startDate.toISOString().slice(0,10);
+              d3.csv("https://www.quandl.com/api/v1/datasets/WIKI/"+word+".csv?rows=1000&column=11&sort_order=asc&trim_start="+startDate)
                 .get(function(error, rows) {
                   if (error) { throw error; }
                   console.log(rows);
-                  d3.selectAll(".ticker-"+word).text('$'+rows[0]['Adj. Close']);
+                  d3.selectAll(".ticker-"+word).text('$'+rows[rows.length-1]['Adj. Close']);
                   save();
                 });
               return (
