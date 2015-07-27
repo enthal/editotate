@@ -18,6 +18,12 @@
       }
       .stock {
         font-family: 'Oxygen', serif;
+        font-size: 90%;
+        white-space: nowrap;
+      }
+      .stock .symbol {
+        font-size: 70%;
+        color: gray;
       }
     </style>
   </head>
@@ -80,13 +86,15 @@
                 .get(function(error, rows) {
                   if (error) { throw error; }
                   console.log(rows);
-                  d3.selectAll(".ticker-"+word).text('$'+rows[rows.length-1]['Adj. Close']);
+                  d3.selectAll(".stock.ticker-"+word+" .close-price").text('$'+rows[rows.length-1]['Adj. Close']);
                   save();
                 });
               return (
-                "<span contenteditable='false' class='stock'>"
+                "<span contenteditable='false' class='stock ticker-"+word+"'>"
                 +stock.name
-                +" <span class='ticker-"+word+"'></span></span>" );
+                +" <span class='symbol'>"+word+"</span>"
+                +" <span class='close-price'></span>"
+                +"</span>" );
             }
           };
         })()
