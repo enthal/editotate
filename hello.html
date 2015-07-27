@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
     <!--script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.0/lodash.min.js" charset="utf-8"></script-->
 
-    <style type="text/css">
+    <style type="text/less">
       body {
         font-family: 'Lora', serif;
         font-size: 15pt;
@@ -20,13 +20,21 @@
         font-family: 'Oxygen', serif;
         font-size: 90%;
         white-space: nowrap;
-      }
-      .stock .symbol {
-        font-size: 70%;
-        color: gray;
+        .symbol {
+          font-size: 70%;
+          color: gray;
+          &:before { content: '('; }
+          &:after  { content: ')'; }
+        }
+        .close-price {
+          &:before { content: '$'; }
+        }
       }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/less.js/2.5.1/less.min.js" type="text/javascript"></script>
+
   </head>
+
 
   <body>
     <h1>Editotate.</h1>
@@ -86,7 +94,7 @@
                 .get(function(error, rows) {
                   if (error) { throw error; }
                   console.log(rows);
-                  d3.selectAll(".stock.ticker-"+word+" .close-price").text('$'+rows[rows.length-1]['Adj. Close']);
+                  d3.selectAll(".stock.ticker-"+word+" .close-price").text(rows[rows.length-1]['Adj. Close']);
                   save();
                 });
               return (
