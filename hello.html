@@ -26,6 +26,11 @@
           &:before { content: '('; }
           &:after  { content: ')'; }
         }
+        svg.sparkline {
+          fill: none;
+          stroke: #000;
+          stroke-width: 0.5px;
+        }
         .close-price {
           &:before { content: '$'; }
         }
@@ -94,13 +99,45 @@
                 .get(function(error, rows) {
                   if (error) { throw error; }
                   console.log(rows);
-                  d3.selectAll(".stock.ticker-"+word+" .close-price").text(rows[rows.length-1]['Adj. Close']);
+
+                  var finalClosePrice = rows[rows.length-1]['Adj. Close'];
+                  for (var i in rows) {
+                    var row = rows[i];
+                    row.date = new Date(row.Date);
+                    row.close = +row['Adj. Close'];
+                  }
+
+                  var stockSel = d3.selectAll(".stock.ticker-"+word);
+
+                  // sparkline!
+                  var width = 100;
+                  var height = 25;
+                  var x = d3.scale.linear().range([0, width]);
+                  var y = d3.scale.linear().range([height, 0]);
+                  x.domain(d3.extent(rows, function(d) { return d.date;  }));
+                  y.domain(d3.extent(rows, function(d) { return d.close; }));
+                  stockSel.selectAll('svg.sparkline path').remove();
+                  stockSel.selectAll('svg.sparkline')
+                    .attr('width', width)
+                    .attr('height', height)
+                    .append('path')
+                    .attr('d', d3.svg.line()
+                      .interpolate('basis')
+                      .x(function(d) { return x(d.date); })
+                      .y(function(d) { return y(d.close); })
+                      (rows) );
+
+
+                  // final adjusted close price
+                  stockSel.selectAll(".close-price").text(finalClosePrice);
+
                   save();
                 });
               return (
                 "<span contenteditable='false' class='stock ticker-"+word+"'>"
                 +stock.name
                 +" <span class='symbol'>"+word+"</span>"
+                +" <svg class='sparkline' width=0 height=0></svg>"
                 +" <span class='close-price'></span>"
                 +"</span>" );
             }
